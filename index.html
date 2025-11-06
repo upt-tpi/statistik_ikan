@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pencatatan Ikan TPI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .config-section {
+            background: #f0f9ff;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .config-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-indicator.connected {
+            background: #10b981;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-info {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f9fafb;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f9fafb;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e5e7eb;
+        }
+
+        .tab.active {
+            background: white;
+            color: #0891b2;
+            border-bottom: 3px solid #0891b2;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f9fafb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+            font-size: 0.95rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 800px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0891b2;
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            background: #f9fafb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .pagination button:hover {
+            background: #f3f4f6;
+        }
+
+        .pagination button.active {
+            background: #0891b2;
+            color: white;
+            border-color: #0891b2;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            margin: 0 15px;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐟 Aplikasi Pencatatan Ikan TPI</h1>
+            <p>Sistem Pencatatan Produksi dan Harga Ikan Harian</p>
+        </div>
+
+        <div class="config-section">
+            <div class="config-status">
+                <div class="status-indicator" id="connectionStatus"></div>
+                <span id="connectionText">Memeriksa koneksi...</span>
+            </div>
+            <button class="btn btn-success" onclick="syncData()">
+                <span id="syncBtnText">🔄 Sync Data</span>
+            </button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('produksi')">
+                🐟 Produksi Ikan
+            </button>
+            <button class="tab" onclick="switchTab('jenis')">
+                📝 Master Jenis Ikan
+            </button>
+            <button class="tab" onclick="switchTab('laporan')">
+                📊 Laporan
+            </button>
+        </div>
+
+        <div class="content">
+            <div id="alertContainer"></div>
+            <div id="contentArea"></div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Form</h2>
+                <button class="btn btn-danger btn-sm" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="mainForm">
+                    <div id="formFields"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button class="btn btn-success" onclick="saveData()">
+                    <span id="saveBtnText">💾 Simpan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL Google Apps Script yang sudah dipatenkan
+        const API_URL = "https://script.google.com/macros/s/AKfycbxjgGaXeqzhQVllR0WD2nSjSusxcXl5Gvr1qN34cA9XyBTLePxWroQFvwsr6XiKcLM5xA/exec"; // Ganti dengan URL yang sebenarnya
+        
+        // Daftar TPI yang tersedia
+        const daftarTPI = [
+            'TPI Tunggulsari',
+            'TPI Tanjungsari',
+            'TPI Tasik Agung I',
+            'TPI Tasik Agung II',
+            'TPI Pasar Banggi',
+            'TPI Pangkalan',
+            'TPI Pandangan',
+            'TPI Karanglincak',
+            'TPI Karanganyar',
+            'TPI Sarang'
+        ];
+        
+        let activeTab = 'produksi';
+        let dataProduksi = [];
+        let dataJenisIkan = [
+            'Layang', 'Bawal hitam', 'Kembung', 'Selar', 'Selar Hijau', 'Tembang', 'Tongkol', 
+            'Tenggiri', 'Cumi-Cumi', 'Petek', 'Tiga waja', 'Ekor kuning', 'Demang K/Swanggi', 
+            'Kwee', 'Abangan', 'Balak', 'Kerapu', 'Pari', 'Teri', 'Rajungan', 'Udang', 
+            'Lemuru', 'Kapas-kapas', 'Layur', 'Manyung', 'Kakap merah', 'Sunglir', 
+            'Baracuda', 'Talang-talang', 'Siro', 'Lemadang', 'Bentong', 'Kapasan', 
+            'Tetengkek', 'Japoh', 'Ayam-ayam', 'Badong', 'Lain-lain'
+        ];
+        let editingId = null;
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let filteredData = [];
+        let isConnected = false;
+
+        window.addEventListener('load', () => {
+            loadLocalData();
+            testConnection();
+            renderContent();
+        });
+
+        function loadLocalData() {
+            const produksi = localStorage.getItem('tpi-produksi');
+            const jenis = localStorage.getItem('tpi-jenis-ikan');
+            
+            if (produksi) dataProduksi = JSON.parse(produksi);
+            if (jenis) dataJenisIkan = JSON.parse(jenis);
+            
+            filteredData = [...dataProduksi];
+        }
+
+        function saveLocalData() {
+            localStorage.setItem('tpi-produksi', JSON.stringify(dataProduksi));
+            localStorage.setItem('tpi-jenis-ikan', JSON.stringify(dataJenisIkan));
+        }
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        async function testConnection() {
+            const statusEl = document.getElementById('connectionStatus');
+            const textEl = document.getElementById('connectionText');
+            
+            textEl.textContent = 'Memeriksa koneksi...';
+            
+            try {
+                const response = await fetch(API_URL + '?action=test');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    statusEl.classList.add('connected');
+                    textEl.textContent = 'Terhubung ke server';
+                    isConnected = true;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                statusEl.classList.remove('connected');
+                textEl.textContent = 'Koneksi gagal: Mode offline';
+                isConnected = false;
+            }
+        }
+
+        async function syncData() {
+            const btn = document.getElementById('syncBtnText');
+            btn.innerHTML = '<div class="loading"></div> Syncing...';
+
+            try {
+                const response = await fetch(API_URL + '?action=getData');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    dataProduksi = data.produksi || [];
+                    dataJenisIkan = data.jenisIkan || dataJenisIkan;
+                    filteredData = [...dataProduksi];
+                    saveLocalData();
+                    renderContent();
+                    showAlert('✅ Data berhasil di-sync!', 'success');
+                }
+            } catch (error) {
+                showAlert('❌ Sync gagal: ' + error.message, 'danger');
+            } finally {
+                btn.innerHTML = '🔄 Sync Data';
+            }
+        }
+
+        async function syncToSheet(action, dataType, rowData) {
+            if (!isConnected) return;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: action,
+                        dataType: dataType,
+                        data: rowData
+                    })
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Sync error:', error);
+                throw error;
+            }
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            currentPage = 1; // Reset to first page when switching tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+            renderContent();
+        }
+
+        function renderContent() {
+            const content = document.getElementById('contentArea');
+            
+            if (activeTab === 'produksi') {
+                renderProduksi(content);
+            } else if (activeTab === 'jenis') {
+                renderJenisIkan(content);
+            } else if (activeTab === 'laporan') {
+                renderLaporan(content);
+            }
+        }
+
+        function renderProduksi(container) {
+            let html = `
+                <div class="toolbar">
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Cari data..." onkeyup="searchData()">
+                    </div>
+                    <button class="btn btn-primary" onclick="openProduksiModal('add')">
+                        ➕ Tambah Produksi
+                    </button>
+                </div>
+            `;
+
+            if (filteredData.length === 0) {
+                html += `
+                    <div class="empty-state">
+                        <h3>Belum ada data produksi</h3>
+                        <p>Klik "Tambah Produksi" untuk mulai mencatat</p>
+                    </div>
+                `;
+            } else {
+                // Calculate pagination
+                const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+                const currentData = filteredData.slice(startIndex, endIndex);
+
+                html += `
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Jenis Ikan</th>
+                                    <th>Berat (Kg)</th>
+                                    <th>Harga/Kg (Rp)</th>
+                                    <th>Total (Rp)</th>
+                                    <th>TPI</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                currentData.forEach((item, index) => {
+                    const total = (item.berat * item.harga).toLocaleString('id-ID');
+                    const actualIndex = startIndex + index + 1;
+                    html += `
+                        <tr>
+                            <td>${actualIndex}</td>
+                            <td>${formatDate(item.tanggal)}</td>
+                            <td>${item.jenisIkan}</td>
+                            <td>${item.berat}</td>
+                            <td>${parseInt(item.harga).toLocaleString('id-ID')}</td>
+                            <td>${total}</td>
+                            <td>${item.tpi}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editProduksi('${item.id}')">✏️</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteProduksi('${item.id}')">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination">
+                        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                            &laquo; Prev
+                        </button>
+                        <span class="pagination-info">
+                            Menampilkan ${startIndex + 1}-${endIndex} dari ${filteredData.length} data
+                        </span>
+                        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                            Next &raquo;
+                        </button>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderJenisIkan(container) {
+            let html = `
+                <div class="toolbar">
+                    <h2>Master Jenis Ikan</h2>
+                    <button class="btn btn-primary" onclick="addJenisIkan()">
+                        ➕ Tambah Jenis Ikan
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+            `;
+
+            dataJenisIkan.forEach((ikan, index) => {
+                html += `
+                    <div style="padding: 15px; background: #f0f9ff; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 600;">🐟 ${ikan}</span>
+                        <button class="btn btn-danger btn-sm" onclick="deleteJenisIkan(${index})">✕</button>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+       function renderLaporan(container) {
+    const today = new Date().toISOString().split('T')[0];
+    const todayData = dataProduksi.filter(p => p.tanggal === today);
+    
+    const totalBerat = todayData.reduce((sum, p) => sum + parseFloat(p.berat), 0);
+    const totalNilai = todayData.reduce((sum, p) => sum + (parseFloat(p.berat) * parseFloat(p.harga)), 0);
+    const jenisIkanHariIni = new Set(todayData.map(p => p.jenisIkan)).size;
+
+    let html = `
+        <h2 style="margin-bottom: 20px;">📊 Laporan Hari Ini (${formatDate(today)})</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Berat</h3>
+                <!-- Perbaikan: gunakan Math.round untuk menghilangkan desimal -->
+                <div class="value">${Math.round(totalBerat)} Kg</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Nilai</h3>
+                <div class="value">Rp ${totalNilai.toLocaleString('id-ID')}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Jenis Ikan</h3>
+                <div class="value">${jenisIkanHariIni} Jenis</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Transaksi</h3>
+                <div class="value">${todayData.length}</div>
+            </div>
+        </div>
+
+        <h3 style="margin: 30px 0 15px 0;">Rincian per Jenis Ikan</h3>
+    `;
+
+    // Group data by jenis ikan
+    const groupedData = {};
+    todayData.forEach(item => {
+        if (!groupedData[item.jenisIkan]) {
+            groupedData[item.jenisIkan] = { berat: 0, nilai: 0, count: 0 };
+        }
+        groupedData[item.jenisIkan].berat += parseFloat(item.berat);
+        groupedData[item.jenisIkan].nilai += parseFloat(item.berat) * parseFloat(item.harga);
+        groupedData[item.jenisIkan].count++;
+    });
+
+    // Convert to array for pagination
+    const groupedArray = Object.keys(groupedData).map(jenis => ({
+        jenis: jenis,
+        berat: groupedData[jenis].berat,
+        nilai: groupedData[jenis].nilai,
+        avgHarga: groupedData[jenis].nilai / groupedData[jenis].berat
+    }));
+
+    // Calculate pagination for laporan
+    const totalPages = Math.ceil(groupedArray.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, groupedArray.length);
+    const currentData = groupedArray.slice(startIndex, endIndex);
+
+    html += `
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jenis Ikan</th>
+                        <th>Total Berat (Kg)</th>
+                        <th>Rata-rata Harga (Rp/Kg)</th>
+                        <th>Total Nilai (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    currentData.forEach(item => {
+        html += `
+            <tr>
+                <td><strong>${item.jenis}</strong></td>
+                <!-- Perbaikan: gunakan Math.round untuk menghilangkan desimal -->
+                <td>${Math.round(item.berat)}</td>
+                <td>${item.avgHarga.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
+                <td>${item.nilai.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination">
+            <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                &laquo; Prev
+            </button>
+            <span class="pagination-info">
+                Menampilkan ${startIndex + 1}-${endIndex} dari ${groupedArray.length} data
+            </span>
+            <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                Next &raquo;
+            </button>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+        function changePage(page) {
+            const totalPages = activeTab === 'produksi' 
+                ? Math.ceil(filteredData.length / itemsPerPage)
+                : Math.ceil(Object.keys(
+                    dataProduksi
+                        .filter(p => p.tanggal === new Date().toISOString().split('T')[0])
+                        .reduce((acc, p) => {
+                            if (!acc[p.jenisIkan]) {
+                                acc[p.jenisIkan] = { berat: 0, nilai: 0 };
+                            }
+                            acc[p.jenisIkan].berat += parseFloat(p.berat);
+                            acc[p.jenisIkan].nilai += parseFloat(p.berat) * parseFloat(p.harga);
+                            return acc;
+                        }, {})
+                    ).length / itemsPerPage);
+
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderContent();
+        }
+
+        function searchData() {
+            const searchTerm = event.target.value.toLowerCase();
+            
+            if (searchTerm === '') {
+                filteredData = [...dataProduksi];
+            } else {
+                filteredData = dataProduksi.filter(item => {
+                    return Object.values(item).some(val => 
+                        String(val).toLowerCase().includes(searchTerm)
+                    );
+                });
+            }
+            
+            currentPage = 1; // Reset to first page when searching
+            renderContent();
+        }
+
+        function openProduksiModal(mode, id = null) {
+            editingId = id;
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modalTitle').textContent = mode === 'add' ? 'Tambah Produksi Ikan' : 'Edit Produksi Ikan';
+
+            const fields = document.getElementById('formFields');
+            const today = new Date().toISOString().split('T')[0];
+            
+            let jenisOptions = dataJenisIkan.map(ikan => `<option value="${ikan}">${ikan}</option>`).join('');
+            let tpiOptions = daftarTPI.map(tpi => `<option value="${tpi}">${tpi}</option>`).join('');
+
+            fields.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tanggal Lelang *</label>
+                        <input type="date" id="tanggal" value="${today}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>TPI *</label>
+                        <select id="tpi" required>
+                            <option value="">Pilih TPI</option>
+                            ${tpiOptions}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Jenis Ikan *</label>
+                        <select id="jenisIkan" onchange="toggleCustomIkan()" required>
+                            <option value="">Pilih Jenis Ikan</option>
+                            ${jenisOptions}
+                            <option value="__custom__">+ Jenis Lain (Input Manual)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="customIkanGroup" style="display: none;">
+                        <label>Nama Ikan Baru *</label>
+                        <input type="text" id="customIkan" placeholder="Masukkan nama ikan">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Berat (Kg) *</label>
+                        <input type="number" id="berat" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga per Kg (Rp) *</label>
+                        <input type="number" id="harga" step="1000" min="0" placeholder="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Catatan</label>
+                    <textarea id="catatan" rows="3" placeholder="Catatan tambahan (opsional)"></textarea>
+                </div>
+            `;
+
+            if (mode === 'edit' && id) {
+                const item = dataProduksi.find(p => p.id === id);
+                if (item) {
+                    document.getElementById('tanggal').value = item.tanggal;
+                    document.getElementById('tpi').value = item.tpi;
+                    document.getElementById('jenisIkan').value = item.jenisIkan;
+                    document.getElementById('berat').value = item.berat;
+                    document.getElementById('harga').value = item.harga;
+                    document.getElementById('catatan').value = item.catatan || '';
+                }
+            }
+        }
+
+        function toggleCustomIkan() {
+            const select = document.getElementById('jenisIkan');
+            const customGroup = document.getElementById('customIkanGroup');
+            
+            if (select.value === '__custom__') {
+                customGroup.style.display = 'block';
+                document.getElementById('customIkan').required = true;
+            } else {
+                customGroup.style.display = 'none';
+                document.getElementById('customIkan').required = false;
+            }
+        }
+
+        async function saveData() {
+            const form = document.getElementById('mainForm');
+            if (!form.checkValidity()) {
+                alert('Mohon lengkapi semua field yang wajib diisi');
+                return;
+            }
+
+            const btn = document.getElementById('saveBtnText');
+            btn.innerHTML = '<div class="loading"></div> Menyimpan...';
+
+            let jenisIkan = document.getElementById('jenisIkan').value;
+            if (jenisIkan === '__custom__') {
+                jenisIkan = document.getElementById('customIkan').value;
+                if (!dataJenisIkan.includes(jenisIkan)) {
+                    dataJenisIkan.push(jenisIkan);
+                }
+            }
+
+            const formData = {
+                id: editingId || 'PROD_' + Date.now(),
+                tanggal: document.getElementById('tanggal').value,
+                tpi: document.getElementById('tpi').value,
+                jenisIkan: jenisIkan,
+                berat: document.getElementById('berat').value,
+                harga: document.getElementById('harga').value,
+                catatan: document.getElementById('catatan').value
+            };
+
+            const action = editingId ? 'update' : 'add';
+            
+            if (editingId) {
+                const index = dataProduksi.findIndex(p => p.id === editingId);
+                if (index !== -1) {
+                    dataProduksi[index] = formData;
+                }
+            } else {
+                dataProduksi.push(formData);
+            }
+
+            // Update filtered data if we're on produksi tab
+            if (activeTab === 'produksi') {
+                filteredData = [...dataProduksi];
+            }
+
+            saveLocalData();
+
+            if (isConnected) {
+                try {
+                    await syncToSheet(action, 'produksi', formData);
+                    showAlert('✅ Data berhasil disimpan dan disinkronkan', 'success');
+                } catch (error) {
+                    showAlert('⚠️ Data tersimpan lokal, tapi gagal sync', 'warning');
+                }
+            } else {
+                showAlert('✅ Data berhasil disimpan lokal', 'success');
+            }
+
+            btn.innerHTML = '💾 Simpan';
+            closeModal();
+            renderContent();
+        }
+
+        function editProduksi(id) {
+            openProduksiModal('edit', id);
+        }
+
+        async function deleteProduksi(id) {
+            if (!confirm('Yakin ingin menghapus data ini?')) return;
+
+            const item = dataProduksi.find(p => p.id === id);
+            dataProduksi = dataProduksi.filter(p => p.id !== id);
+            
+            // Update filtered data if we're on produksi tab
+            if (activeTab === 'produksi') {
+                filteredData = [...dataProduksi];
+            }
+            
+            saveLocalData();
+
+            if (isConnected && item) {
+                try {
+                    await syncToSheet('delete', 'produksi', item);
+                } catch (error) {
+                    console.error('Sync delete error:', error);
+                }
+            }
+
+            showAlert('✅ Data berhasil dihapus', 'success');
+            renderContent();
+        }
+
+        function addJenisIkan() {
+            const nama = prompt('Masukkan nama jenis ikan baru:');
+            if (nama && nama.trim() !== '') {
+                if (!dataJenisIkan.includes(nama.trim())) {
+                    dataJenisIkan.push(nama.trim());
+                    saveLocalData();
+                    
+                    if (isConnected) {
+                        syncToSheet('add', 'jenisIkan', { nama: nama.trim() })
+                            .catch(err => console.error('Sync error:', err));
+                    }
+                    
+                    showAlert('✅ Jenis ikan berhasil ditambahkan', 'success');
+                    renderContent();
+                } else {
+                    showAlert('⚠️ Jenis ikan sudah ada', 'warning');
+                }
+            }
+        }
+
+        function deleteJenisIkan(index) {
+            if (!confirm('Yakin ingin menghapus jenis ikan ini?')) return;
+
+            const nama = dataJenisIkan[index];
+            dataJenisIkan.splice(index, 1);
+            saveLocalData();
+
+            if (isConnected) {
+                syncToSheet('delete', 'jenisIkan', { nama: nama })
+                    .catch(err => console.error('Sync error:', err));
+            }
+
+            showAlert('✅ Jenis ikan berhasil dihapus', 'success');
+            renderContent();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('mainForm').reset();
+            editingId = null;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('id-ID', options);
+        }
+    </script>
+</body>
+</html>

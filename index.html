@@ -486,7 +486,7 @@
 
     <script>
         // URL Google Apps Script yang sudah dipatenkan
-        const API_URL = "https://script.google.com/macros/s/AKfycbxjgGaXeqzhQVllR0WD2nSjSusxcXl5Gvr1qN34cA9XyBTLePxWroQFvwsr6XiKcLM5xA/exec"; // Ganti dengan URL yang sebenarnya
+        const API_URL = "https://script.google.com/macros/s/AKfycbxjgGaXeqzhQVllR0WD2nSjSusxcXl5Gvr1qN34cA9XyBTLePxWroQFvwsr6XiKcLM5xA/exec";
         
         // Daftar TPI yang tersedia
         const daftarTPI = [
@@ -616,7 +616,7 @@
 
         function switchTab(tab) {
             activeTab = tab;
-            currentPage = 1; // Reset to first page when switching tabs
+            currentPage = 1;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.closest('.tab').classList.add('active');
             renderContent();
@@ -655,7 +655,6 @@
                     </div>
                 `;
             } else {
-                // Calculate pagination
                 const totalPages = Math.ceil(filteredData.length / itemsPerPage);
                 const startIndex = (currentPage - 1) * itemsPerPage;
                 const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
@@ -745,111 +744,106 @@
             container.innerHTML = html;
         }
 
-       function renderLaporan(container) {
-    const today = new Date().toISOString().split('T')[0];
-    const todayData = dataProduksi.filter(p => p.tanggal === today);
-    
-    const totalBerat = todayData.reduce((sum, p) => sum + parseFloat(p.berat), 0);
-    const totalNilai = todayData.reduce((sum, p) => sum + (parseFloat(p.berat) * parseFloat(p.harga)), 0);
-    const jenisIkanHariIni = new Set(todayData.map(p => p.jenisIkan)).size;
+        function renderLaporan(container) {
+            const today = new Date().toISOString().split('T')[0];
+            const todayData = dataProduksi.filter(p => p.tanggal === today);
+            
+            const totalBerat = todayData.reduce((sum, p) => sum + parseFloat(p.berat), 0);
+            const totalNilai = todayData.reduce((sum, p) => sum + (parseFloat(p.berat) * parseFloat(p.harga)), 0);
+            const jenisIkanHariIni = new Set(todayData.map(p => p.jenisIkan)).size;
 
-    let html = `
-        <h2 style="margin-bottom: 20px;">📊 Laporan Hari Ini (${formatDate(today)})</h2>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Berat</h3>
-                <!-- Perbaikan: gunakan Math.round untuk menghilangkan desimal -->
-                <div class="value">${Math.round(totalBerat)} Kg</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Nilai</h3>
-                <div class="value">Rp ${totalNilai.toLocaleString('id-ID')}</div>
-            </div>
-            <div class="stat-card">
-                <h3>Jenis Ikan</h3>
-                <div class="value">${jenisIkanHariIni} Jenis</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total Transaksi</h3>
-                <div class="value">${todayData.length}</div>
-            </div>
-        </div>
+            let html = `
+                <h2 style="margin-bottom: 20px;">📊 Laporan Hari Ini (${formatDate(today)})</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Berat</h3>
+                        <div class="value">${Math.round(totalBerat)} Kg</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Nilai</h3>
+                        <div class="value">Rp ${totalNilai.toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Jenis Ikan</h3>
+                        <div class="value">${jenisIkanHariIni} Jenis</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Transaksi</h3>
+                        <div class="value">${todayData.length}</div>
+                    </div>
+                </div>
 
-        <h3 style="margin: 30px 0 15px 0;">Rincian per Jenis Ikan</h3>
-    `;
+                <h3 style="margin: 30px 0 15px 0;">Rincian per Jenis Ikan</h3>
+            `;
 
-    // Group data by jenis ikan
-    const groupedData = {};
-    todayData.forEach(item => {
-        if (!groupedData[item.jenisIkan]) {
-            groupedData[item.jenisIkan] = { berat: 0, nilai: 0, count: 0 };
-        }
-        groupedData[item.jenisIkan].berat += parseFloat(item.berat);
-        groupedData[item.jenisIkan].nilai += parseFloat(item.berat) * parseFloat(item.harga);
-        groupedData[item.jenisIkan].count++;
-    });
+            const groupedData = {};
+            todayData.forEach(item => {
+                if (!groupedData[item.jenisIkan]) {
+                    groupedData[item.jenisIkan] = { berat: 0, nilai: 0, count: 0 };
+                }
+                groupedData[item.jenisIkan].berat += parseFloat(item.berat);
+                groupedData[item.jenisIkan].nilai += parseFloat(item.berat) * parseFloat(item.harga);
+                groupedData[item.jenisIkan].count++;
+            });
 
-    // Convert to array for pagination
-    const groupedArray = Object.keys(groupedData).map(jenis => ({
-        jenis: jenis,
-        berat: groupedData[jenis].berat,
-        nilai: groupedData[jenis].nilai,
-        avgHarga: groupedData[jenis].nilai / groupedData[jenis].berat
-    }));
+            const groupedArray = Object.keys(groupedData).map(jenis => ({
+                jenis: jenis,
+                berat: groupedData[jenis].berat,
+                nilai: groupedData[jenis].nilai,
+                avgHarga: groupedData[jenis].nilai / groupedData[jenis].berat
+            }));
 
-    // Calculate pagination for laporan
-    const totalPages = Math.ceil(groupedArray.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, groupedArray.length);
-    const currentData = groupedArray.slice(startIndex, endIndex);
+            const totalPages = Math.ceil(groupedArray.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, groupedArray.length);
+            const currentData = groupedArray.slice(startIndex, endIndex);
 
-    html += `
-        <div class="table-container">
-            <table>
-                <thead>
+            html += `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Jenis Ikan</th>
+                                <th>Total Berat (Kg)</th>
+                                <th>Rata-rata Harga (Rp/Kg)</th>
+                                <th>Total Nilai (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            currentData.forEach(item => {
+                html += `
                     <tr>
-                        <th>Jenis Ikan</th>
-                        <th>Total Berat (Kg)</th>
-                        <th>Rata-rata Harga (Rp/Kg)</th>
-                        <th>Total Nilai (Rp)</th>
+                        <td><strong>${item.jenis}</strong></td>
+                        <td>${Math.round(item.berat)}</td>
+                        <td>${item.avgHarga.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
+                        <td>${item.nilai.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
                     </tr>
-                </thead>
-                <tbody>
-    `;
+                `;
+            });
 
-    currentData.forEach(item => {
-        html += `
-            <tr>
-                <td><strong>${item.jenis}</strong></td>
-                <!-- Perbaikan: gunakan Math.round untuk menghilangkan desimal -->
-                <td>${Math.round(item.berat)}</td>
-                <td>${item.avgHarga.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
-                <td>${item.nilai.toLocaleString('id-ID', {maximumFractionDigits: 0})}</td>
-            </tr>
-        `;
-    });
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        &laquo; Prev
+                    </button>
+                    <span class="pagination-info">
+                        Menampilkan ${startIndex + 1}-${endIndex} dari ${groupedArray.length} data
+                    </span>
+                    <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        Next &raquo;
+                    </button>
+                </div>
+            `;
 
-    html += `
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="pagination">
-            <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                &laquo; Prev
-            </button>
-            <span class="pagination-info">
-                Menampilkan ${startIndex + 1}-${endIndex} dari ${groupedArray.length} data
-            </span>
-            <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                Next &raquo;
-            </button>
-        </div>
-    `;
-
-    container.innerHTML = html;
-}
+            container.innerHTML = html;
+        }
 
         function changePage(page) {
             const totalPages = activeTab === 'produksi' 
@@ -886,7 +880,7 @@
                 });
             }
             
-            currentPage = 1; // Reset to first page when searching
+            currentPage = 1;
             renderContent();
         }
 
@@ -905,11 +899,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Tanggal Lelang *</label>
-                        <input type="date" id="tanggal" value="${today}" required>
+                        <input type="date" id="tanggal" value="${today}">
                     </div>
                     <div class="form-group">
                         <label>TPI *</label>
-                        <select id="tpi" required>
+                        <select id="tpi">
                             <option value="">Pilih TPI</option>
                             ${tpiOptions}
                         </select>
@@ -919,7 +913,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Jenis Ikan *</label>
-                        <select id="jenisIkan" onchange="toggleCustomIkan()" required>
+                        <select id="jenisIkan" onchange="toggleCustomIkan()">
                             <option value="">Pilih Jenis Ikan</option>
                             ${jenisOptions}
                             <option value="__custom__">+ Jenis Lain (Input Manual)</option>
@@ -934,17 +928,12 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Berat (Kg) *</label>
-                        <input type="number" id="berat" step="0.01" min="0" placeholder="0.00" required>
+                        <input type="number" id="berat" step="0.01" min="0" placeholder="0.00">
                     </div>
                     <div class="form-group">
                         <label>Harga per Kg (Rp) *</label>
-                        <input type="number" id="harga" step="1000" min="0" placeholder="0" required>
+                        <input type="number" id="harga" step="1000" min="0" placeholder="0">
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Catatan</label>
-                    <textarea id="catatan" rows="3" placeholder="Catatan tambahan (opsional)"></textarea>
                 </div>
             `;
 
@@ -956,7 +945,6 @@
                     document.getElementById('jenisIkan').value = item.jenisIkan;
                     document.getElementById('berat').value = item.berat;
                     document.getElementById('harga').value = item.harga;
-                    document.getElementById('catatan').value = item.catatan || '';
                 }
             }
         }
@@ -967,16 +955,27 @@
             
             if (select.value === '__custom__') {
                 customGroup.style.display = 'block';
-                document.getElementById('customIkan').required = true;
             } else {
                 customGroup.style.display = 'none';
-                document.getElementById('customIkan').required = false;
             }
         }
 
         async function saveData() {
-            const form = document.getElementById('mainForm');
-            if (!form.checkValidity()) {
+            const tanggal = document.getElementById('tanggal').value;
+            const tpi = document.getElementById('tpi').value;
+            let jenisIkan = document.getElementById('jenisIkan').value;
+            const berat = document.getElementById('berat').value;
+            const harga = document.getElementById('harga').value;
+
+            if (jenisIkan === '__custom__') {
+                jenisIkan = document.getElementById('customIkan').value.trim();
+                if (!jenisIkan) {
+                    alert('Mohon masukkan nama ikan baru');
+                    return;
+                }
+            }
+
+            if (!tanggal || !tpi || !jenisIkan || !berat || !harga) {
                 alert('Mohon lengkapi semua field yang wajib diisi');
                 return;
             }
@@ -984,9 +983,7 @@
             const btn = document.getElementById('saveBtnText');
             btn.innerHTML = '<div class="loading"></div> Menyimpan...';
 
-            let jenisIkan = document.getElementById('jenisIkan').value;
-            if (jenisIkan === '__custom__') {
-                jenisIkan = document.getElementById('customIkan').value;
+            if (document.getElementById('jenisIkan').value === '__custom__') {
                 if (!dataJenisIkan.includes(jenisIkan)) {
                     dataJenisIkan.push(jenisIkan);
                 }
@@ -994,12 +991,11 @@
 
             const formData = {
                 id: editingId || 'PROD_' + Date.now(),
-                tanggal: document.getElementById('tanggal').value,
-                tpi: document.getElementById('tpi').value,
+                tanggal: tanggal,
+                tpi: tpi,
                 jenisIkan: jenisIkan,
-                berat: document.getElementById('berat').value,
-                harga: document.getElementById('harga').value,
-                catatan: document.getElementById('catatan').value
+                berat: berat,
+                harga: harga
             };
 
             const action = editingId ? 'update' : 'add';
@@ -1013,7 +1009,6 @@
                 dataProduksi.push(formData);
             }
 
-            // Update filtered data if we're on produksi tab
             if (activeTab === 'produksi') {
                 filteredData = [...dataProduksi];
             }
@@ -1046,7 +1041,6 @@
             const item = dataProduksi.find(p => p.id === id);
             dataProduksi = dataProduksi.filter(p => p.id !== id);
             
-            // Update filtered data if we're on produksi tab
             if (activeTab === 'produksi') {
                 filteredData = [...dataProduksi];
             }
@@ -1115,5 +1109,4 @@
         }
     </script>
 </body>
-
 </html>
